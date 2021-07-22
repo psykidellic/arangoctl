@@ -97,6 +97,12 @@ func (c *Client) CheckOrCreateCollection(name string, collectionType string) err
 
 		log.Infof("Collection %s exists", name)
 	} else {
+
+		_, ok := stringTypeToCollectionType[collectionType]
+		if !ok {
+			return fmt.Errorf("Invalid type %s for collection %s", collectionType, name)
+		}
+
 		options := &driver.CreateCollectionOptions{
 			Type: stringTypeToCollectionType[collectionType],
 		}
