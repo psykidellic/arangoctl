@@ -2,6 +2,7 @@ package arangoctl
 
 import (
 	"errors"
+	"fmt"
 	"github.com/ghodss/yaml"
 	"github.com/mitchellh/mapstructure"
 	"io/ioutil"
@@ -56,6 +57,22 @@ func LoadResourceBytes(contents []byte) (ResourceConfig, error) {
 		var c CollectionConfig
 		mapstructure.Decode(config, &c)
 		return c, nil
+	case "View":
+		var v SearchViewConfig
+
+		// Mapstructure is unable to reflect insidde the spec
+		// to map to searchviewproperties straight
+		// so we do double mapping
+		if _, ok := config["spec"]; ok {
+			mapstructure.Decode(config, &v)
+			searchProperties := config["spec"]
+			mapstructure.Decode(searchProperties, &v.SearchViewProperties)
+			//do something here
+		} else {
+			return nil, fmt.Errorf("no spec defined for searchview")
+		}
+
+		return v, nil
 	default:
 		return nil, InvalidKind
 	}

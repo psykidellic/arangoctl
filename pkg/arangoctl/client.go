@@ -115,11 +115,6 @@ func (c *Client) CheckOrCreateCollection(name string, collectionType string) err
 		log.Infof("Collection %s created", name)
 	}
 
-	_, err = collection.Indexes(c.ctx)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -147,4 +142,33 @@ func (c *Client) ApplyIndex(collection string, index CollectionIndex) (driver.In
 	}
 
 	return col.EnsurePersistentIndex(c.ctx, index.Fields, &persistentIndexOptions)
+}
+
+func (c *Client) ViewExists(view string) (bool, error) {
+	return c.db.ViewExists(c.ctx, view)
+}
+
+func (c *Client) GetView(view string) (driver.View, error) {
+	return c.db.View(c.ctx, view)
+}
+
+func (c *Client) CreateView(name string, options *driver.ArangoSearchViewProperties) (driver.View, error) {
+	return c.db.CreateArangoSearchView(c.ctx, name, options)
+}
+
+func (c *Client) UpdateView(name string, options driver.ArangoSearchViewProperties) error {
+	view, err := c.GetView(name)
+	if err != nil {
+		return err
+	}
+
+	// driver.View is an interface of different types
+	// of view but right now only searchview is supported but still better to handle
+	// exceptions
+	searchview, err := view.ArangoSearchView()
+	if err != nil {
+		return err
+	}
+
+	return searchview.SetProperties(c.ctx, options)
 }
