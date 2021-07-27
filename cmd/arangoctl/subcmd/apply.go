@@ -6,6 +6,7 @@ import (
 	"github.com/psykidellic/arangoctl/pkg/arangoctl"
 	"os"
 	"path/filepath"
+	"sort"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -76,7 +77,14 @@ func applyRun(cmd *cobra.Command, args []string) error {
 			continue
 		}
 
+		// We will sort by file name so that one could have folder
+		// with simulated order. Eg. you may want to create the collection
+		// before creating its search index
+		sort.Strings(matches)
+
 		for _, match := range matches {
+
+			log.Infof("Applying %s", match)
 
 			// Load the relevant resource config from each type
 			// and then get the resource object and apply them
