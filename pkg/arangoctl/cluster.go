@@ -20,11 +20,21 @@ type ClusterMeta struct {
 	Description string `json:"description"`
 }
 
+// ClusterAuthentication contains auth details to connect to the cluster
+type ClusterAuthentication struct {
+	Type 		string `json:"type"`
+	Username	string `json:"username"`
+	Password 	string `json:"password"`
+}
+
 // ClusterSpec contains the details necessary to communicate with a ArangoDB cluster.
 type ClusterSpec struct {
 	// Database to use for this connection
 	// This database already has to be present
 	Db 		  string 	`json:"db"`
+
+	Authentication ClusterAuthentication `json:"auth"`
+
 	// BootstrapAddrs is a list of one or more broker bootstrap addresses. These can use IPs
 	// or DNS names.
 	Endpoints []string `json:"endpoints"`
@@ -36,5 +46,6 @@ func (c ClusterConfig) NewAdminClient(ctx context.Context) (*Client, error) {
 		Endpoints: c.Spec.Endpoints,
 		Db: c.Spec.Db,
 		Context: ctx,
+		Authentication: c.Spec.Authentication,
 	})
 }

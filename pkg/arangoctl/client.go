@@ -25,10 +25,21 @@ type Client struct {
 type ClientConfig struct {
 	Db 			string
 	Endpoints 	[]string
+	Authentication ClusterAuthentication
 	Context 	context.Context
 }
 
 func NewClient(config ClientConfig) (*Client, error) {
+
+	// Setup authentication
+	var auth driver.Authentication
+	if config.Authentication != (ClusterAuthentication{}) {
+		auth = driver.BasicAuthentication(
+			config.Authentication.Username,
+			config.Authentication.Password,
+		)
+	}
+
 	// create and store the arango client
 	conn, err := http.NewConnection(http.ConnectionConfig{
 		Endpoints: config.Endpoints,
@@ -39,6 +50,7 @@ func NewClient(config ClientConfig) (*Client, error) {
 
 	c, err := driver.NewClient(driver.ClientConfig{
 		Connection: conn,
+		Authentication: auth,
 	})
 	if err != nil {
 		return nil, err
