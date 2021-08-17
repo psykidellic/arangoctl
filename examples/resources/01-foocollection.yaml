@@ -1,0 +1,19 @@
+Kind: Collection
+meta:
+  name: foo
+  type: document
+spec:
+  indexes:
+    - name: nameIndex
+      type: persistent
+      fields:
+        - name
+    - name: locationIndex
+      type: persistent
+      fields:
+        - country
+        - city
+      options:
+        - unique: true
+        - inbackground: true
+

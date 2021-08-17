@@ -1,0 +1,11 @@
+meta:
+  name: Arango
+  environment: dev
+  description: Dev arango cluster
+spec:
+  db: _system
+  auth:
+    username: root
+    password: rootpassword
+  endpoints:
+    - http://localhost:8529
