@@ -1,0 +1,14 @@
+Kind: View
+meta:
+  name: fooview
+spec:
+  links:
+    foo:
+      analyzers:
+        - identity
+        - text_en
+      fields:
+        name:
+          analyzers:
+            - text_en
+      includeAllFields: false
